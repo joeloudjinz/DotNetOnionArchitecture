@@ -1,8 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31903.59
-MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InzRate.Core.Domain", "InzRate.Core.Domain\InzRate.Core.Domain.csproj", "{59800D5D-8B93-4283-AF3A-C34FE15E3B57}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InzRate.Core.Application", "InzRate.Core.Application\InzRate.Core.Application.csproj", "{50025AE6-49CF-44AD-A74C-4272E5F3F75C}"
