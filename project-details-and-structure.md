@@ -2,7 +2,7 @@
 
 **1. Final Project and Folder Structure**
 
-This structure physically separates the logical layers of the architecture, ensuring a clean separation of concerns and enforcing the dependency rule. Solution folders (`src`, `tests`) are used for high-level organization.
+This structure physically separates the logical layers of the architecture, ensuring a clean separation of concerns and enforcing the dependency rule.
 
 ```
 └── InzRate.sln
