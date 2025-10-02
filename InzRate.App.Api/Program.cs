@@ -12,3 +12,13 @@ app.Services.InitializeServices(app.Configuration);
 app.MapOpenApi();
 
 app.Run();
+
+// --- Testability Hook ---
+// This makes the auto-generated Program class public and available to your test project.
+// WebApplicationFactory<Program> uses this as its entry point.
+namespace InzRate.App.Api
+{
+    public partial class Program
+    {
+    }
+}

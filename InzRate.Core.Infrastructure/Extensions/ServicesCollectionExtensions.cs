@@ -36,7 +36,7 @@ public static class ServicesCollectionExtensions
         services.AddScoped<IReviewRepository, ReviewRepository>();
 
         // Services
-        services.AddSingleton<IAuthService, AuthService>();
+        services.AddScoped<IAuthService, AuthService>();
     }
 
     public static void RegisterCommandsAndQueries(this IServiceCollection services, IConfiguration configuration)

@@ -5,6 +5,8 @@ namespace InzRate.Core.Infrastructure.Persistence.Entities;
 
 public class AppUser : IdentityUser<Guid>
 {
+    // Domain properties must be added here
+
     public static AppUser FromDomain(User user)
     {
         return new AppUser

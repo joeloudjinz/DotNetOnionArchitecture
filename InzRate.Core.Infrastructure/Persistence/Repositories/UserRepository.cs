@@ -17,17 +17,18 @@ public class UserRepository(AppDbContext context) : IUserRepository
 
     public async Task<bool> IsEmailUnique(string email)
     {
-        return await context.Users.AnyAsync(u => u.Email == email);
+        return !await context.Users.AnyAsync(u => u.Email == email);
     }
 
     public async Task<bool> IsUsernameUnique(string username)
     {
-        return await context.Users.AnyAsync(u => u.UserName == username);
+        return !await context.Users.AnyAsync(u => u.UserName == username);
     }
 
     public async Task<User?> GetByIdAsync(Guid id)
     {
-        var appUser = await context.Users.FirstOrDefaultAsync(u => u.Id == id);
+         // We use FindAsync so if the entity is already tracked it will be returned instead of retrieving it again from the database
+        var appUser = await context.Users.FindAsync(id);
         return appUser is null ? null : AppUser.ToDomain(appUser);
     }
 

@@ -9,22 +9,20 @@ public class UserConfiguration : IEntityTypeConfiguration<AppUser>
     public void Configure(EntityTypeBuilder<AppUser> builder)
     {
         builder.HasKey(u => u.Id);
-        
+
         builder.Property(u => u.Id)
             .ValueGeneratedNever();
-        
+
         builder.Property(u => u.UserName)
             .IsRequired()
             .HasMaxLength(50);
-        
+
         builder.HasIndex(u => u.UserName).IsUnique();
-        
+
         builder.Property(u => u.Email)
             .IsRequired()
             .HasMaxLength(50);
-        
+
         builder.HasIndex(u => u.Email).IsUnique();
-        
-        builder.ToTable("Users");
     }
 }
