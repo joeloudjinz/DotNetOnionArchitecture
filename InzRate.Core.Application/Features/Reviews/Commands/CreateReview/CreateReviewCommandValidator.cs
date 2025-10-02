@@ -1,5 +1,4 @@
 using FluentValidation;
-using InzRate.Core.Application.Features.Reviews.Commands.CreateReview;
 
 namespace InzRate.Core.Application.Features.Reviews.Commands.CreateReview;
 

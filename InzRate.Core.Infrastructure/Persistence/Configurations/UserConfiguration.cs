@@ -1,30 +1,30 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using InzRate.Core.Domain.Entities;
+using InzRate.Core.Infrastructure.Persistence.Entities;
 
 namespace InzRate.Core.Infrastructure.Persistence.Configurations;
 
-public class UserConfiguration : IEntityTypeConfiguration<User>
+public class UserConfiguration : IEntityTypeConfiguration<AppUser>
 {
-    public void Configure(EntityTypeBuilder<User> builder)
+    public void Configure(EntityTypeBuilder<AppUser> builder)
     {
-        // Configure the primary key
         builder.HasKey(u => u.Id);
         
-        // Configure Id property
         builder.Property(u => u.Id)
-            .ValueGeneratedNever(); // Guid will be generated in the application layer
+            .ValueGeneratedNever();
         
-        // Configure Username property
-        builder.Property(u => u.Username)
+        builder.Property(u => u.UserName)
             .IsRequired()
             .HasMaxLength(50);
         
-        // Configure unique index on Username
-        builder.HasIndex(u => u.Username)
-            .IsUnique();
+        builder.HasIndex(u => u.UserName).IsUnique();
         
-        // Table name
+        builder.Property(u => u.Email)
+            .IsRequired()
+            .HasMaxLength(50);
+        
+        builder.HasIndex(u => u.Email).IsUnique();
+        
         builder.ToTable("Users");
     }
 }

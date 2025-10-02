@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\InzRate.Core.Application\InzRate.Core.Application.csproj" />
+    <ProjectReference Include="..\InzRate.Core.Infrastructure\InzRate.Core.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

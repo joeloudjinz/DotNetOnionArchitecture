@@ -1,23 +1,15 @@
-using MediatR;
 using InzRate.Core.Application.Contracts.Persistence;
 using InzRate.Core.Application.DTOs;
-using InzRate.Core.Application.Features.Reviews.Queries;
+using MediatR;
 
 namespace InzRate.Core.Application.Features.Reviews.Queries;
 
-public class GetReviewsForMovieQueryHandler : IRequestHandler<GetReviewsForMovieQuery, IEnumerable<ReviewDto>>
+public class GetReviewsForMovieQueryHandler(IUserRepository userRepository, IReviewRepository reviewRepository) : IRequestHandler<GetReviewsForMovieQuery, IEnumerable<ReviewDto>>
 {
-    private readonly IUnitOfWork _unitOfWork;
-
-    public GetReviewsForMovieQueryHandler(IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-    }
-
     public async Task<IEnumerable<ReviewDto>> Handle(GetReviewsForMovieQuery request, CancellationToken cancellationToken)
     {
         // Get all reviews for the specified movie
-        var reviews = await _unitOfWork.ReviewRepository.GetByMovieIdAsync(request.MovieId);
+        var reviews = await reviewRepository.GetByMovieIdAsync(request.MovieId);
 
         // Create a list to hold the DTOs
         var reviewDtos = new List<ReviewDto>();
@@ -26,7 +18,7 @@ public class GetReviewsForMovieQueryHandler : IRequestHandler<GetReviewsForMovie
         foreach (var review in reviews)
         {
             // Get the associated user to include the username in the DTO
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(review.UserId);
+            var user = await userRepository.GetByIdAsync(review.UserId);
 
             var reviewDto = new ReviewDto(
                 Id: review.Id,

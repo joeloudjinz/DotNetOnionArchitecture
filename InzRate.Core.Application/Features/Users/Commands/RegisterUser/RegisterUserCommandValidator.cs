@@ -1,5 +1,4 @@
 using FluentValidation;
-using InzRate.Core.Application.Features.Users.Commands.RegisterUser;
 
 namespace InzRate.Core.Application.Features.Users.Commands.RegisterUser;
 

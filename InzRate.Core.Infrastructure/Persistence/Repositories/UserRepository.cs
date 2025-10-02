@@ -1,52 +1,78 @@
-using Microsoft.EntityFrameworkCore;
 using InzRate.Core.Application.Contracts.Persistence;
 using InzRate.Core.Domain.Entities;
-using InzRate.Core.Infrastructure.Persistence;
+using InzRate.Core.Infrastructure.Persistence.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace InzRate.Core.Infrastructure.Persistence.Repositories;
 
-public class UserRepository : IUserRepository
+public class UserRepository(AppDbContext context) : IUserRepository
 {
-    private readonly AppDbContext _context;
-
-    public UserRepository(AppDbContext context)
+    public async Task<User?> CreateAsync(string username, string email)
     {
-        _context = context;
+        var user = User.Create(username, email);
+        var appUser = AppUser.FromDomain(user);
+        await context.Users.AddAsync(appUser);
+        return user;
+    }
+
+    public async Task<bool> IsEmailUnique(string email)
+    {
+        return await context.Users.AnyAsync(u => u.Email == email);
+    }
+
+    public async Task<bool> IsUsernameUnique(string username)
+    {
+        return await context.Users.AnyAsync(u => u.UserName == username);
     }
 
     public async Task<User?> GetByIdAsync(Guid id)
     {
-        return await _context.Users
-            .FirstOrDefaultAsync(u => u.Id == id);
+        var appUser = await context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        return appUser is null ? null : AppUser.ToDomain(appUser);
     }
 
     public async Task<User?> GetByUsernameAsync(string username)
     {
-        if (string.IsNullOrWhiteSpace(username))
-            return null;
+        if (string.IsNullOrWhiteSpace(username)) return null;
 
-        return await _context.Users
-            .FirstOrDefaultAsync(u => u.Username.ToLower() == username.ToLower());
+        var appUser = await context.Users.FirstOrDefaultAsync(u => u.UserName!.ToLower() == username.ToLower());
+        return appUser is null ? null : AppUser.ToDomain(appUser);
+    }
+
+    public async Task<User?> GetByEmailAsync(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email)) return null;
+
+        var appUser = await context.Users.FirstOrDefaultAsync(u => u.Email!.ToLower() == email.ToLower());
+        return appUser is null ? null : AppUser.ToDomain(appUser);
     }
 
     public async Task<IEnumerable<User>> GetAllAsync()
     {
-        return await _context.Users
-            .ToListAsync();
+        return await context.Users.Select(e => AppUser.ToDomain(e)).ToListAsync();
     }
 
     public async Task AddAsync(User user)
     {
-        await _context.Users.AddAsync(user);
+        var appUser = AppUser.FromDomain(user);
+        await context.Users.AddAsync(appUser);
     }
 
-    public void Update(User user)
+    public async Task<User?> Update(User user)
     {
-        _context.Users.Update(user);
+        var existingUser = await context.Users.FindAsync(user.Id);
+        if (existingUser is null) return null;
+
+        var domainUser = AppUser.ToDomain(existingUser).Update(user.Username, user.Email);
+        existingUser.UserName = domainUser.Username;
+        existingUser.Email = domainUser.Email;
+        // Update other properties ... 
+        return domainUser;
     }
 
     public void Delete(User user)
     {
-        _context.Users.Remove(user);
+        var appUser = AppUser.FromDomain(user);
+        context.Users.Remove(appUser);
     }
 }

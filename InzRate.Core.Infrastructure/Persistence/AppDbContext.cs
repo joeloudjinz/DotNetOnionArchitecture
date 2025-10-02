@@ -1,17 +1,15 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using InzRate.Core.Domain.Entities;
 using InzRate.Core.Domain.Aggregates;
 using InzRate.Core.Infrastructure.Persistence.Configurations;
+using InzRate.Core.Infrastructure.Persistence.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace InzRate.Core.Infrastructure.Persistence;
 
-public class AppDbContext : DbContext
+public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<AppUser, AppRole, Guid>(options)
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-    {
-    }
-
-    public DbSet<User> Users { get; set; }
     public DbSet<Movie> Movies { get; set; }
     public DbSet<Review> Reviews { get; set; }
 
@@ -24,4 +22,10 @@ public class AppDbContext : DbContext
 
         base.OnModelCreating(modelBuilder);
     }
+}
+
+
+// TODO Implement Role feature
+public class AppRole: IdentityRole<Guid>
+{
 }

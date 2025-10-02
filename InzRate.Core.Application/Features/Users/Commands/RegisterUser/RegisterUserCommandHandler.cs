@@ -1,42 +1,25 @@
-using MediatR;
+using InzRate.Core.Application.Contracts.Identity;
 using InzRate.Core.Application.Contracts.Persistence;
-using InzRate.Core.Domain.Entities;
-using InzRate.Core.Application.Features.Users.Commands.RegisterUser;
+using MediatR;
 
 namespace InzRate.Core.Application.Features.Users.Commands.RegisterUser;
 
-public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, Guid>
+public class RegisterUserCommandHandler(IUnitOfWork unitOfWork, IUserRepository userRepository, IAuthService authService) : IRequestHandler<RegisterUserCommand, Guid>
 {
-    private readonly IUnitOfWork _unitOfWork;
-
-    public RegisterUserCommandHandler(IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-    }
-
     public async Task<Guid> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        // Check if a user with the same username already exists
-        var existingUser = await _unitOfWork.UserRepository.GetByUsernameAsync(request.Username);
-        if (existingUser != null)
-        {
-            throw new InvalidOperationException($"A user with username '{request.Username}' already exists.");
-        }
+        if (!await userRepository.IsEmailUnique(request.Email)) throw new InvalidOperationException("Email already taken.");
+        if (!await userRepository.IsUsernameUnique(request.Username)) throw new InvalidOperationException("Username already taken");
 
-        // Create a new User entity
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            Username = request.Username
-        };
+        var user = await userRepository.CreateAsync(request.Username, request.Email);
+        if (user is null) throw new Exception("Failed to create user");
 
-        // Add the user to the repository
-        await _unitOfWork.UserRepository.AddAsync(user);
+        await authService.RegisterNewUserAuthenticationDetailsAsync(user.Id, request.Password);
 
-        // Commit the transaction
-        await _unitOfWork.SaveChangesAsync();
+        // Attach role
+        // Generate tokens
 
-        // Return the ID of the created user
+        await unitOfWork.SaveChangesAsync();
         return user.Id;
     }
 }

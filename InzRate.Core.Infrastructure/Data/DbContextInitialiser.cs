@@ -4,27 +4,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InzRate.Core.Infrastructure.Data;
 
-public class DbContextInitialiser
+public class DbContextInitialiser(AppDbContext context)
 {
-    private readonly AppDbContext _context;
-
-    public DbContextInitialiser(AppDbContext context)
-    {
-        _context = context;
-    }
-
     public async Task InitialiseAsync()
     {
-        if (_context.Database.GetPendingMigrations().Any())
+        if (context.Database.GetPendingMigrations().Any())
         {
-            await _context.Database.MigrateAsync();
+            await context.Database.MigrateAsync();
         }
     }
 
     public async Task SeedAsync()
     {
         // Check if movies already exist to avoid duplicates
-        if (await _context.Movies.AnyAsync())
+        if (await context.Movies.AnyAsync())
         {
             return; // Data already seeded
         }
@@ -97,10 +90,10 @@ public class DbContextInitialiser
         // Add movies to the context
         foreach (var movie in movies)
         {
-            _ = _context.Movies.Add(movie);
+            _ = context.Movies.Add(movie);
         }
 
         // Save changes to the database
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
     }
 }

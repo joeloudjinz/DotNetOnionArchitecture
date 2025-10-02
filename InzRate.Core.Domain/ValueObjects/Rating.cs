@@ -1,5 +1,3 @@
-using System;
-
 namespace InzRate.Core.Domain.ValueObjects;
 
 public class Rating : IEquatable<Rating>
